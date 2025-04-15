@@ -57,6 +57,7 @@ Where:
   * The kraken db used locally only has coronavirus sequences.
 
 ## Reference files
+
 Filename | Provenance
 ---------|-----------
 s3://czid-public-references/consensus-genome/MN908947.3.fa | Downloaded from https://www.ncbi.nlm.nih.gov/nuccore/MN908947 in July 2020
