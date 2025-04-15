@@ -65,6 +65,9 @@ jobs:
     strategy:
       matrix:
         workflow_dir: ${{fromJson(needs['list-workflow-dirs'].outputs.matrix)}}
+    permissions: # these permissions must be set for AWS auth to work
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: configure aws credentials
