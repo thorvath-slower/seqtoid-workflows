@@ -114,6 +114,3 @@ s3://czid-public-references/ncbi-indexes-prod/{date}/index-generation-2/accessio
 s3://czid-public-references/ncbi-indexes-prod/{date}/index-generation-2/nt_loc.marisa | A mapping from accession to the location of the accession in NT. Generated using the `marisa-trie` package
 s3://czid-public-references/ncbi-indexes-prod/{date}/index-generation-2/nr_loc.marisa | A mapping from accession to the location of the accession in NR. Generated using the `marisa-trie` package
 s3://czid-public-references/ncbi-indexes-prod/{date}/index-generation-2/nt_info.marisa | A mapping from accession to the name and length of the entry generated using the `marisa-trie` package
-
-
-
