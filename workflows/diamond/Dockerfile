@@ -22,4 +22,3 @@ RUN pip3 install -r requirements-dev.txt
 COPY --from=lib idseq_utils/idseq_utils/diamond_scatter.py /usr/local/bin/
 
 WORKDIR /workdir
-
