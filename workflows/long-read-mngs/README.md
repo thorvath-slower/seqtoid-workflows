@@ -48,4 +48,3 @@ Further documentation on how to use the CZ ID long-read-mngs workflow can be fou
 ​
 
 **v0.6.0** -- April 4, 2023 -- Initial pipeline release
-
