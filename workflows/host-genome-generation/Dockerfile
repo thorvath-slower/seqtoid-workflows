@@ -9,3 +9,4 @@ RUN apt-get update && apt-get install -y bowtie2 curl minimap2
 RUN curl -L https://github.com/alexdobin/STAR/archive/2.5.3a.tar.gz | tar xz
 RUN mv STAR-2.5.3a/bin/Linux_x86_64_static/* /usr/local/bin
 RUN rm -rf STAR-2.5.3a
+

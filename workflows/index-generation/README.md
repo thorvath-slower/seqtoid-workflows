@@ -94,3 +94,4 @@ used to generate versioned-taxid-lineages.csv file used to populate taxon_lineag
 * run and exec into container: `docker run -v /mnt:/mnt --rm -it index-generation:latest bash`
 * to run a certain task in index-geneation.wdl with miniwdl:
 * `miniwdl run index-generation.wdl --task GenerateLocDB --input generate_loc_db_input.json`
+

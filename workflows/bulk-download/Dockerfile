@@ -8,3 +8,4 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
+
