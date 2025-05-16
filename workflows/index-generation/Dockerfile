@@ -90,9 +90,9 @@ RUN apt-get update && \
         curl \
         jq
 
-RUN wget https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.15.0+-x64-linux.tar.gz && \
-    tar -xzvf ncbi-blast-2.15.0+-x64-linux.tar.gz && \
-    cp ncbi-blast-2.15.0+/bin/* /usr/local/bin/
+RUN wget https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.16.0+-x64-linux.tar.gz && \
+    tar -xzvf ncbi-blast-2.16.0+-x64-linux.tar.gz && \
+    cp ncbi-blast-2.16.0+/bin/* /usr/local/bin/
 
 COPY --from=builder /diamond/build/diamond /usr/local/bin
 COPY --from=builder /minimap2/minimap2 /usr/local/bin/
