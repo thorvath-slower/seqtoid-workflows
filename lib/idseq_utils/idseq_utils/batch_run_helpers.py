@@ -180,7 +180,8 @@ def _run_batch_job(
     i = 0
     while True:
         try:
-            status = _get_job_status(job_id, use_batch_api=(i > 0 and i % 30 == 0))
+            # status = _get_job_status(job_id, use_batch_api=(i > 0 and i % 30 == 0))
+            status = _get_job_status(job_id, True) # temp fix because lambda doesn't exist to create the file on s3
         except ClientError as e:
             # If we get throttled, randomly wait to de-synchronize the requests
             if e.response["Error"]["Code"] == "TooManyRequestsException":
