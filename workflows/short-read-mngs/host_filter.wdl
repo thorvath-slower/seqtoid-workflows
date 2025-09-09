@@ -1,4 +1,4 @@
-version 1.1
+version 1.0
 
 # CZ ID short-read-mngs pipeline stage 1 (2022 version):
 # - input validation & QC
