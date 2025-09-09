@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 # local_driver.wdl: this top-level workflow runs the four stages (host_filter, non_host_alignment,
 # postprocess, experimental) in sequence. The IDseq back-end invokes those four WDLs separately
 # for various reasons, which is effectively the same as running this locally.

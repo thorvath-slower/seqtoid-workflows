@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 task RunAssembly {
   input {
@@ -159,7 +159,7 @@ task BlastContigs_refined_gsnap_out {
     File lineage_db
     File accession2taxid
     File taxon_blacklist
-    File deuterostome_db
+    File? deuterostome_db
     Boolean use_deuterostome_filter
     Boolean use_taxon_whitelist
   }
@@ -172,7 +172,7 @@ task BlastContigs_refined_gsnap_out {
     --input-files '[["~{gsnap_out_gsnap_m8}", "~{gsnap_out_gsnap_deduped_m8}", "~{gsnap_out_gsnap_hitsummary_tab}", "~{gsnap_out_gsnap_counts_with_dcr_json}"], ["~{assembly_contigs_fasta}", "~{assembly_scaffolds_fasta}", "~{assembly_read_contig_sam}", "~{assembly_contig_stats_json}"], ["~{assembly_nt_refseq_fasta}"], ["~{duplicate_cluster_sizes_tsv}"]]' \
     --output-files '["assembly/gsnap.blast.m8", "assembly/gsnap.reassigned.m8", "assembly/gsnap.hitsummary2.tab", "assembly/refined_gsnap_counts_with_dcr.json", "assembly/gsnap_contig_summary.json", "assembly/gsnap.blast.top.m8"]' \
     --output-dir-s3 '~{s3_wd_uri}' \
-    --additional-files '{"lineage_db": "~{lineage_db}", "accession2taxid": "~{accession2taxid}", "taxon_blacklist": "~{taxon_blacklist}", "deuterostome_db": "~{if use_deuterostome_filter then '~{deuterostome_db}' else ''}"}' \
+    --additional-files '{"lineage_db": "~{lineage_db}", "accession2taxid": "~{accession2taxid}", "taxon_blacklist": "~{taxon_blacklist}", "deuterostome_db": "~{deuterostome_db}"}' \
     --additional-attributes '{"db_type": "nt", "use_taxon_whitelist": ~{use_taxon_whitelist}}'
   >>>
   output {
@@ -266,7 +266,7 @@ task ComputeMergedTaxonCounts {
       --input-files '["~{nt_m8}", "~{nt_hitsummary2_tab}", "~{nt_contig_summary_json}", "~{nr_m8}", "~{nr_hitsummary2_tab}", "~{nr_contig_summary_json}", "~{cluster_sizes_tsv}"]' \
       --output-files '["merged.m8", "merged.hitsummary2.tab", "merged_taxon_counts_with_dcr.json", "merged_contig_summary.json"]' \
       --output-dir-s3 '~{s3_wd_uri}' \
-      --additional-files '{"lineage_db": "~{lineage_db}", "taxon_blacklist": "~{taxon_blacklist}", "deuterostome_db": "~{if use_deuterostome_filter then '~{deuterostome_db}' else ''}"}' \
+      --additional-files '{"lineage_db": "~{lineage_db}", "taxon_blacklist": "~{taxon_blacklist}", "deuterostome_db": "~{deuterostome_db}"}' \
       --additional-attributes '{"use_taxon_whitelist": ~{use_taxon_whitelist} }'
   >>>
 
@@ -561,7 +561,7 @@ workflow czid_postprocess {
       lineage_db = lineage_db,
       accession2taxid = accession2taxid_db,
       taxon_blacklist = taxon_blacklist,
-      deuterostome_db = deuterostome_db,
+      deuterostome_db = if use_deuterostome_filter then deuterostome_db else null,
       use_deuterostome_filter = use_deuterostome_filter,
       use_taxon_whitelist = use_taxon_whitelist
   }
@@ -601,7 +601,7 @@ workflow czid_postprocess {
 
       lineage_db = lineage_db,
       taxon_blacklist = taxon_blacklist,
-      deuterostome_db = deuterostome_db,
+      deuterostome_db = if use_deuterostome_filter then deuterostome_db else null,
 
       use_deuterostome_filter = use_deuterostome_filter,
       use_taxon_whitelist = use_taxon_whitelist
