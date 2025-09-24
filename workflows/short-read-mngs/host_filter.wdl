@@ -442,6 +442,9 @@ task kallisto {
   command <<<
     set -euxo pipefail
 
+    # Print kallisto_invocation to stderr for debugging
+    echo "~{kallisto_invocation}" >&2
+
     # NOTE: kallisto exit code will be 1 if no reads pseudoalign, which we don't necessarily
     #       consider an error. Therefore decide success based on existence of run_info.json and
     #       abundance.tsv
@@ -504,8 +507,8 @@ task kallisto {
       **kallisto RNA quantification**
 
       Quantifies host transcripts using [kallisto](https://pachterlab.github.io/kallisto/about).
-      The host transcript sequences are sourced from GENCODE. 
-      Not all CZ ID host species have transcripts indexed, so transcripts are not calculated for all hosts. 
+      The host transcript sequences are sourced from GENCODE.
+      Not all CZ ID host species have transcripts indexed, so transcripts are not calculated for all hosts.
 
       kallisto is run on the fastp-filtered FASTQ(s):
 
