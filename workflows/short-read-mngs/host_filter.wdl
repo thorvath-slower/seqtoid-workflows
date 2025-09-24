@@ -443,7 +443,7 @@ task kallisto {
     set -euxo pipefail
 
     # Print kallisto_invocation to stderr for debugging
-    echo "~{kallisto_invocation}" >&2
+    echo "~{kallisto_invocation}"
 
     # NOTE: kallisto exit code will be 1 if no reads pseudoalign, which we don't necessarily
     #       consider an error. Therefore decide success based on existence of run_info.json and
