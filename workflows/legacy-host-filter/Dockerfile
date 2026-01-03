@@ -7,7 +7,9 @@ LABEL maintainer="CZ ID Team <idseq-tech@chanzuckerberg.com>"
 
 RUN sed -i s/archive.ubuntu.com/us-west-2.ec2.archive.ubuntu.com/ /etc/apt/sources.list; \
         echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/98czid; \
-        echo 'APT::Install-Suggests "false";' > /etc/apt/apt.conf.d/99czid
+        echo 'APT::Install-Suggests "false";' > /etc/apt/apt.conf.d/99czid; \
+        echo 'Acquire::http::Timeout "120";' > /etc/apt/apt.conf.d/99czid; \
+        echo 'Acquire::ftp::Timeout "120";' > /etc/apt/apt.conf.d/99czid;
 
 RUN apt-get -q update && apt-get -q install -y \
         jq \
