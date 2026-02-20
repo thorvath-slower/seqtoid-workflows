@@ -247,7 +247,7 @@ def _run_chunk(
 
     wdl_output_uri = os.path.join(chunk_dir, f"{chunk_id}-output.json")
 
-    wdl_workflow_uri = f"s3://idseq-workflows/{aligner}-{aligner_wdl_version}/{aligner}.wdl"
+    wdl_workflow_uri = f"s3://cypherid-samples-deleteme/{aligner}-{aligner_wdl_version}/{aligner}.wdl"
 
     cache_prefix_uri = os.path.join(chunk_dir, "batch_job_cache/")
     cache_bucket, cache_prefix = _bucket_and_key(cache_prefix_uri)
