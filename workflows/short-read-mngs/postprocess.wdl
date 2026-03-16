@@ -486,7 +486,7 @@ workflow czid_postprocess {
     File duplicate_cluster_sizes_tsv
     File czid_dedup_out_duplicate_clusters_csv
     String index_version = "2021-01-22" # FIXME: vestigial input
-    String nt_db = "s3://czid-public-references/ncbi-sources/2no021-01-22/nt"
+    String nt_db = "s3://czid-public-references/ncbi-sources/2021-01-22/nt"
     File nt_loc_db = "s3://czid-public-references/alignment_data/2021-01-22/nt_loc.db"
     String nr_db = "s3://czid-public-references/ncbi-sources/2021-01-22/nr"
     File nr_loc_db = "s3://czid-public-references/alignment_data/2021-01-22/nr_loc.db"
