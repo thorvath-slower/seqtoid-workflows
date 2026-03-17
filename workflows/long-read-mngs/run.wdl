@@ -1295,7 +1295,7 @@ workflow czid_long_read_mngs {
         File lineage_db
         File accession2taxid_db
         File taxon_blacklist
-        File taxon_whitelist = "s3://czid-public-references/taxonomy/2020-02-10/respiratory_taxon_whitelist.txt"
+        File taxon_whitelist = "s3://seqtoid-public-references/taxonomy/2020-02-10/respiratory_taxon_whitelist.txt"
         Int min_read_length = 36
         File deuterostome_db
         File nt_info_db

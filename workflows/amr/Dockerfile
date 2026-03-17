@@ -36,8 +36,9 @@ RUN curl -LO https://github.com/shenwei356/seqkit/releases/download/v2.4.0/seqki
     && mv seqkit /usr/local/bin/ && rm seqkit_linux_amd64.tar.gz
 
 # load databases
-RUN curl -LO https://czid-public-references.s3.us-west-2.amazonaws.com/card/2023-05-22/card.json && \
-    rgi card_annotation -i card.json && \
+COPY tmp/card.json card.json
+
+RUN rgi card_annotation -i card.json && \
     rgi load \
         --card_annotation card_database_v3.2.6.fasta \
         -i card.json 
