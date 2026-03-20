@@ -190,8 +190,19 @@ RUN ldconfig
 RUN git clone https://github.com/mlin/fastp.git && git -C fastp checkout c427e57
 RUN cd fastp && make -j8 && ./fastp test && cp fastp /usr/local/bin
 WORKDIR /
-RUN --mount=type=bind,source=tmp/HISAT2.zip,target=/tmp/HISAT2.zip,readonly \
-    unzip /tmp/HISAT2.zip
+
+RUN curl -L "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -r awscliv2.zip aws
+
+ARG S3_DATABASE_BUCKET
+RUN --mount=type=secret,id=aws \
+    . /run/secrets/aws && \
+    aws s3 cp s3://${S3_DATABASE_BUCKET}/test/hisat2/hisat2.zip /tmp/HISAT2.zip && \
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN && \
+    unzip /tmp/HISAT2.zip && rm /tmp/HISAT2.zip
+
 RUN curl -L https://github.com/pachterlab/kallisto/releases/download/v0.46.1/kallisto_linux-v0.46.1.tar.gz | tar xz -C /
 
 # Uninstall build only dependencies

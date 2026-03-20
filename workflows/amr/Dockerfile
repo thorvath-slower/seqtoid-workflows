@@ -35,13 +35,22 @@ RUN curl -LO https://github.com/telatin/seqfu2/releases/download/v${SEQFU_VER}/S
 RUN curl -LO https://github.com/shenwei356/seqkit/releases/download/v2.4.0/seqkit_linux_amd64.tar.gz && tar zxvf seqkit_linux_amd64.tar.gz \
     && mv seqkit /usr/local/bin/ && rm seqkit_linux_amd64.tar.gz
 
-# load databases
-COPY tmp/card.json card.json
+RUN curl -L "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -r awscliv2.zip aws
 
+ARG S3_DATABASE_BUCKET
+RUN --mount=type=secret,id=aws \
+    . /run/secrets/aws && \
+    aws s3 cp s3://${S3_DATABASE_BUCKET}/card/2023-05-22/card.json . && \
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+
+# load databases
 RUN rgi card_annotation -i card.json && \
     rgi load \
         --card_annotation card_database_v3.2.6.fasta \
-        -i card.json 
+        -i card.json
 
 COPY --from=lib /bin/log_assembly_fail.py /usr/local/bin/log_assembly_fail.py
 COPY empty-main-header.txt /tmp/empty-main-header.txt 
