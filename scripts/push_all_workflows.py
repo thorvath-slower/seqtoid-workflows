@@ -20,41 +20,42 @@ workflows_dir = "workflows"
 # wdl_profile = "idseq-sandbox"
 
 workflow_to_versions_dict = {
-    # "amr": [
-    #     "v1.4.2"
-    # ],
-    # "benchmark": [
-    #     "v0.0.3"
-    # ],
-    # "bulk-download": [
-    #     "v0.0.9"
-    # ],
-    # "consensus-genome": [
-    #     "v3.5.1",
-    #     "v3.5.4",
-    #     "v3.5.5"
-    # ],
-    # "diamond": [
-    #     "v1.1.0",
-    #     "v1.1.1"
-    # ],
-    # "host-genome-generation": [
-    #     "v0.2.0"
-    # ],
-    # "index-generation": [
-    #     "v2.4.8"
-    # ],
-    # # "legacy-host-filter": [ ],
-    # "long-read-mngs": [
-    #     "v0.7.11"
-    # ],
-    # "minimap2": [
-    #     "v1.0.0",
-    #     "v1.0.1"
-    # ],
-    # "phylotree-ng": [ # TODO: This doesn't match any versions in CZI, and is unused. So why build it at all?
-    #     "v6.11.0"
-    # ],
+    "amr": [
+        "v1.4.2"
+    ],
+    "benchmark": [
+        "v0.0.3"
+    ],
+    "bulk-download": [
+        "v0.0.9"
+    ],
+    "consensus-genome": [
+        "v3.5.1",
+        "v3.5.4",
+        "v3.5.5"
+    ],
+    "diamond": [
+        "v1.1.0",
+        "v1.1.1"
+    ],
+    "host-genome-generation": [
+        "v0.2.0"
+    ],
+    "index-generation": [
+        "v2.4.8"
+    ],
+    # "legacy-host-filter": [ ],
+    "long-read-mngs": [
+        "v0.7.11",
+        "v0.7.12",
+    ],
+    "minimap2": [
+        "v1.0.0",
+        "v1.0.1"
+    ],
+    "phylotree-ng": [ # TODO: This doesn't match any versions in CZI, and is unused. So why build it at all?
+        "v6.11.0"
+    ],
     "short-read-mngs": [
         "v8.3.11",
         "v8.3.15"
