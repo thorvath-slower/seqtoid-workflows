@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+#
+# Local CI harness for seqtoid-workflows.
+#
+# Mirrors .github/workflows/wdl-ci.yml MINUS the AWS/ECR push, so changes can be
+# validated locally while the fork's GitHub CI is unavailable (it needs a
+# self-hosted `idseq-dev` runner + AWS/ECR — see CZID-150). It drives the SAME
+# Makefile targets the developers + GitHub CI use, so local and CI can't drift.
+#
+# What it runs (per the wdl-ci pipeline, push step removed):
+#   1. make lint                  flake8 + pre-commit (miniwdl-check)
+#   2. make check WORKFLOW=<w>     miniwdl static validation
+#   3. make build WORKFLOW=<w>     docker build (local tag, NO ECR push)
+#   4. make test-<w>              miniwdl step tests (needs the built image)
+#   5. make cargo-test-index-generation   Rust tests
+#
+# What it does NOT do (Bucket B — needs the real runner): the ECR push, the
+# self-hosted `wdl-ci-integration` job, and the full short-read-mngs benchmarks.
+#
+# Prerequisites: Docker; Python (see .python-version — 3.10); Rust/cargo for the
+# index-generation tests. No AWS credentials needed.
+#
+# Usage:
+#   bin/ci-local                  # workflows changed since HEAD^ (else all)
+#   bin/ci-local amr              # a single workflow
+#   bin/ci-local amr consensus-genome   # several
+#   LINT_ONLY=1 bin/ci-local      # fast: lint + miniwdl check only (no docker/rust)
+#   SKIP_TESTS=1 bin/ci-local amr # lint + check + build, skip the step tests
+#
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+log() { printf '\n\033[36m=== %s ===\033[0m\n' "$*"; }
+
+# --- which workflows? --------------------------------------------------------
+if [ "$#" -gt 0 ]; then
+  WORKFLOWS="$*"
+else
+  # changed-since-HEAD^, falling back to all workflows when nothing changed / on a
+  # fresh checkout where HEAD^ isn't comparable.
+  WORKFLOWS="$(./scripts/diff-workflows.sh 2>/dev/null | grep -v '^[[:space:]]*$' || true)"
+  if [ -z "$WORKFLOWS" ]; then
+    WORKFLOWS="$(ls workflows)"
+    log "no changed workflows detected — running ALL: $(echo "$WORKFLOWS" | tr '\n' ' ')"
+  fi
+fi
+
+# --- 1. lint (installs the .venv via the python-dependencies prereq) ---------
+log "lint (flake8 + pre-commit miniwdl-check)"
+make lint
+
+# --- 2-4. per workflow: miniwdl check -> docker build -> step tests ----------
+for w in $WORKFLOWS; do
+  [ -d "workflows/$w" ] || { echo "skip: workflows/$w not a directory"; continue; }
+
+  log "miniwdl check: $w"
+  make check WORKFLOW="$w"
+
+  if [ -n "${LINT_ONLY:-}" ]; then continue; fi
+
+  log "docker build (no push): $w"
+  make build WORKFLOW="$w"
+
+  if [ -n "${SKIP_TESTS:-}" ]; then continue; fi
+  if [ -d "workflows/$w/test" ]; then
+    log "miniwdl step tests: $w"
+    make "test-$w"
+  else
+    echo "no workflows/$w/test — skipping step tests"
+  fi
+done
+
+# --- 5. Rust ------------------------------------------------------------------
+if [ -z "${LINT_ONLY:-}" ]; then
+  log "cargo test (index-generation)"
+  make cargo-test-index-generation
+fi
+
+log "local CI passed (ECR push + self-hosted integration/benchmarks are Bucket B)"
