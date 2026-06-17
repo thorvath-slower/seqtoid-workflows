@@ -1,14 +1,20 @@
-# czid-workflows - portable CZ ID production pipeline logic
+# seqtoid-workflows - portable seqtoid production pipeline logic
+
+> **Naming:** the platform is being renamed to **seqtoid**. This repo already uses
+> the `seqtoid-*` convention. Prose below uses the seqtoid name; **functional/
+> external** references are kept as-is — the live product site (`czid.org`), the
+> upstream `github.com/chanzuckerberg/czid-*` URLs, and the CZI / CZ Biohub
+> attribution still resolve to live resources until a coordinated cutover.
 
 #### Infectious Disease Sequencing Platform
-CZ ID is a hypothesis-free global software platform that helps scientists identify pathogens in metagenomic sequencing
+seqtoid is a hypothesis-free global software platform that helps scientists identify pathogens in metagenomic sequencing
 data.
 
 - **Discover** - Identify the pathogen landscape
 - **Detect** - Monitor and review potential outbreaks
 - **Decipher** - Find potential infecting organisms in large datasets
 
-CZ ID is a collaborative open project of [Chan Zuckerberg Initiative](https://www.chanzuckerberg.com/) and
+seqtoid is a collaborative open project of [Chan Zuckerberg Initiative](https://www.chanzuckerberg.com/) and
 [Chan Zuckerberg Biohub](https://czbiohub.org).
 
 ## Workflows
@@ -21,7 +27,7 @@ Currently we have 5 main workflows. The details of each pipeline are in a README
 * [amr](workflows/amr/README.md)
 
 ## Running these workflows
-This repository contains [WDL](https://openwdl.org/) workflows that the [CZ ID](https://czid.org) platform uses in
+This repository contains [WDL](https://openwdl.org/) workflows that the [seqtoid](https://czid.org) platform uses in
 production. See [Running WDL workflows locally](https://github.com/chanzuckerberg/czid-workflows/wiki/Running-WDL-workflows-locally)
 to get started with them.
 
