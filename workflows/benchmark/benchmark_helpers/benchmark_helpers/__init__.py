@@ -1,2 +1,2 @@
 """ benchmark_helpers """
-__version__ = "EXTERNALLY_MANAGED"
+__version__ = "1.0.0"

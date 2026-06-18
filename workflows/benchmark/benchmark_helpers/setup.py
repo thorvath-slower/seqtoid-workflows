@@ -10,7 +10,9 @@ setup(
     author_email="idseqhelp@chanzuckerberg.com",
     license="MIT",
     packages=find_packages(exclude=["tests.*", "tests"]),
-    install_requires=["boto3~=1.23.0"],
+    # boto3 1.23.x pulls botocore that imports the stdlib `cgi` module, removed in
+    # Python 3.13 (the scipy-notebook base). Require a cgi-free line.
+    install_requires=["boto3>=1.35"],
     tests_require=["coverage", "flake8", "wheel"],
     dependency_links=[],
     entry_points={"console_scripts": []},
