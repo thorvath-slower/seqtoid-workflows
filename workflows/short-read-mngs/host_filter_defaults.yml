@@ -5,7 +5,7 @@ hisat2_index_tar: s3://public-test-bucket-idseq/host_filter/human/2022/hisat2_in
 kallisto_idx: s3://public-test-bucket-idseq/host_filter/human/2022/kallisto_idx/GRCh38_ERCC.kallisto.idx
 human_bowtie2_index_tar: s3://public-test-bucket-idseq/host_filter/human/2022/bowtie2_index_tar/GRCh38_ERCC.bowtie2.tar
 human_hisat2_index_tar: s3://public-test-bucket-idseq/host_filter/human/2022/hisat2_index_tar/GRCh38_ERCC.hisat2.tar
-adapter_fasta: s3://czid-public-references/adapter_sequences/illumina_TruSeq3-PE-2_NexteraPE-PE.fasta
+adapter_fasta: s3://seqtoid-public-references/adapter_sequences/illumina_TruSeq3-PE-2_NexteraPE-PE.fasta
 max_input_fragments: 75000000
 max_subsample_fragments: 1000000
 s3_wd_uri: ''

@@ -9,3 +9,5 @@ pyrightconfig.json
 
 .idea
 *.iml
+
+*.wdl.zip

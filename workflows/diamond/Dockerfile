@@ -3,7 +3,12 @@ FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN sed -i s/archive.ubuntu.com/us-west-2.ec2.archive.ubuntu.com/ /etc/apt/sources.list
 
-RUN apt-get update && apt-get -y install git gdb libclang-common-6.0-dev cmake g++ zlib1g-dev python3-pip
+RUN apt-get update \
+    && apt-get -y install git gdb libclang-common-6.0-dev cmake g++ zlib1g-dev python3-pip locales locales-all \
+    && rm -rf /var/lib/apt/lists/*
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
 
 WORKDIR /tmp
 RUN git clone https://github.com/morsecodist/diamond
@@ -18,6 +23,8 @@ RUN mv diamond /usr/local/bin
 WORKDIR /tmp
 RUN git clone https://github.com/chanzuckerberg/czid-workflows
 WORKDIR /tmp/czid-workflows
+
+ENV PYTHONIOENCODING utf-8
 RUN pip3 install -r requirements-dev.txt
 COPY --from=lib idseq_utils/idseq_utils/diamond_scatter.py /usr/local/bin/
 
