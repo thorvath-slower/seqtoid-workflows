@@ -1,7 +1,8 @@
 name: short-read-mngs viral benchmarks
 
 on:
-  push
+  #push:
+  workflow_dispatch:
 
 env:
   LC_ALL: C.UTF-8
