@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 # CZ ID short-read-mngs pipeline stage 1 (2022 version):
 # - input validation & QC
@@ -24,7 +24,7 @@ workflow czid_host_filter {
     File human_bowtie2_index_tar
     File human_hisat2_index_tar
 
-    File ercc_index_tar = "s3://czid-public-references/host_filter/ercc/20221031/bowtie2_index_tar/ercc.bowtie2.tar" # default ercc index
+    File ercc_index_tar = "s3://seqtoid-public-references/host_filter/ercc/20221031/bowtie2_index_tar/ercc.bowtie2.tar" # default ercc index
 
     Int max_input_fragments
     Int max_subsample_fragments
@@ -442,6 +442,9 @@ task kallisto {
   command <<<
     set -euxo pipefail
 
+    # Print kallisto_invocation to stderr for debugging
+    echo "~{kallisto_invocation}"
+
     # NOTE: kallisto exit code will be 1 if no reads pseudoalign, which we don't necessarily
     #       consider an error. Therefore decide success based on existence of run_info.json and
     #       abundance.tsv
@@ -504,8 +507,8 @@ task kallisto {
       **kallisto RNA quantification**
 
       Quantifies host transcripts using [kallisto](https://pachterlab.github.io/kallisto/about).
-      The host transcript sequences are sourced from GENCODE. 
-      Not all CZ ID host species have transcripts indexed, so transcripts are not calculated for all hosts. 
+      The host transcript sequences are sourced from GENCODE.
+      Not all CZ ID host species have transcripts indexed, so transcripts are not calculated for all hosts.
 
       kallisto is run on the fastp-filtered FASTQ(s):
 

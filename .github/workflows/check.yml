@@ -1,0 +1,40 @@
+name: Check
+
+on:
+  push:
+
+env:
+  LC_ALL: C.UTF-8
+  LANG: C.UTF-8
+  DEBIAN_FRONTEND: noninteractive
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Flake8 Root
+        uses: py-actions/flake8@v2.3.0
+        with:
+          path: .
+          max-line-length: "120"
+          # TODO: lint all files, including lib/idseq-dag and long-read-mngs/idseq-dag
+          # TODO: See also: .flake8 file
+          exclude: lib/idseq-dag,.git,__pycache__,build,dist,.venv,long-read-mngs/idseq-dag
+      - name: Flake8 lib/idseq-dag
+        uses: py-actions/flake8@v2.3.0
+        with:
+          # TODO: See also: .flake8 file
+          path: lib/idseq-dag/idseq_dag
+          max-line-length: "120"
+          ignore: E302,F401,E501,W504,E711,E712,E722,E741

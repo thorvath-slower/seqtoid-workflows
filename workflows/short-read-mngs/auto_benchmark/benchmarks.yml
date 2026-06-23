@@ -17,23 +17,23 @@ settings:
 
 databases:
   viral:
-    host_filter.bowtie2_index_tar: s3://czid-public-references/host_filter/ercc/20221031/bowtie2_index_tar/ercc.bowtie2.tar
-    host_filter.hisat2_index_tar: s3://czid-public-references/host_filter/ercc/20221031/hisat2_index_tar/ercc.hisat2.tar
-    host_filter.kallisto_idx: s3://czid-public-references/host_filter/ercc/20221031/kallisto_idx/ercc.kallisto.idx
-    host_filter.human_bowtie2_index_tar: s3://czid-public-references/host_filter/ercc/20221031/bowtie2_index_tar/ercc.bowtie2.tar
-    host_filter.human_hisat2_index_tar: s3://czid-public-references/host_filter/ercc/20221031/hisat2_index_tar/ercc.hisat2.tar
-    minimap2_local_db_path: s3://czid-public-references/test/viral-alignment-indexes/viral_nt
-    diamond_local_db_path: s3://czid-public-references/test/viral-alignment-indexes/viral_nr
+    host_filter.bowtie2_index_tar: s3://seqtoid-public-references/host_filter/ercc/20221031/bowtie2_index_tar/ercc.bowtie2.tar
+    host_filter.hisat2_index_tar: s3://seqtoid-public-references/host_filter/ercc/20221031/hisat2_index_tar/ercc.hisat2.tar
+    host_filter.kallisto_idx: s3://seqtoid-public-references/host_filter/ercc/20221031/kallisto_idx/ercc.kallisto.idx
+    host_filter.human_bowtie2_index_tar: s3://seqtoid-public-references/host_filter/ercc/20221031/bowtie2_index_tar/ercc.bowtie2.tar
+    host_filter.human_hisat2_index_tar: s3://seqtoid-public-references/host_filter/ercc/20221031/hisat2_index_tar/ercc.hisat2.tar
+    minimap2_local_db_path: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nt
+    diamond_local_db_path: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nr
     diamond_args: --mid-sensitive
     non_host_gsnap_genome_name: viral_nt_gsnap2018-10-26_k16
-    non_host_alignment.accession2taxid_db: s3://czid-public-references/mini-database/alignment_indexes/2020-08-20-viral/viral_accessions2taxid.db
-    postprocess.nt_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nt
-    postprocess.nt_loc_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nt_loc.db
-    postprocess.nr_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nr
-    postprocess.nr_loc_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nr_loc.db
-    experimental.nt_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nt
-    experimental.nt_loc_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nt_loc.db
-    experimental.nt_info_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nt_info.db
+    non_host_alignment.accession2taxid_db: s3://seqtoid-public-references/mini-database/alignment_indexes/2020-08-20-viral/viral_accessions2taxid.db
+    postprocess.nt_db: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nt
+    postprocess.nt_loc_db: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nt_loc.db
+    postprocess.nr_db: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nr
+    postprocess.nr_loc_db: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nr_loc.db
+    experimental.nt_db: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nt
+    experimental.nt_loc_db: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nt_loc.db
+    experimental.nt_info_db: s3://seqtoid-public-references/test/viral-alignment-indexes/viral_nt_info.db
   full:
     Input:
         HostFilter:
@@ -43,11 +43,11 @@ databases:
             adapter_fasta: https://raw.githubusercontent.com/broadinstitute/viral-pipelines/master/test/input/clipDb.fasta
             max_input_fragments: 75000000 
             max_subsample_fragments: 1000000
-            star_genome: s3://czid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/human_STAR_genome.tar
-            bowtie2_genome: s3://czid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/human_bowtie2_genome.tar
-            gsnap_genome: s3://czid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/hg38_pantro5_k16.tar
-            human_star_genome: s3://czid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/human_STAR_genome.tar
-            human_bowtie2_genome: s3://czid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/human_bowtie2_genome.tar
+            star_genome: s3://seqtoid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/human_STAR_genome.tar
+            bowtie2_genome: s3://seqtoid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/human_bowtie2_genome.tar
+            gsnap_genome: s3://seqtoid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/hg38_pantro5_k16.tar
+            human_star_genome: s3://seqtoid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/human_STAR_genome.tar
+            human_bowtie2_genome: s3://seqtoid-public-references/host_filter/human/2018-02-15-utc-1518652800-unixtime__2018-02-15-utc-1518652800-unixtime/human_bowtie2_genome.tar
         NonHostAlignment:
             use_deuterostome_filter: true
             use_taxon_whitelist: false
@@ -60,8 +60,8 @@ databases:
             use_taxon_whitelist: false
 
 
-    non_host_rapsearch2_index: s3://czid-public-references/alignment_indexes/2020-04-20/nr.tar.gz
-    non_host_gsnap_index: s3://czid-public-references/alignment_indexes/2020-04-20/nt.tar.gz
+    non_host_rapsearch2_index: s3://seqtoid-public-references/alignment_indexes/2020-04-20/nr.tar.gz
+    non_host_gsnap_index: s3://seqtoid-public-references/alignment_indexes/2020-04-20/nt.tar.gz
     non_host_gsnap_genome_name: nt_k16
 
 samples:

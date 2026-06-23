@@ -30,3 +30,4 @@ postprocess.accession2taxid_db: s3://czid-public-references/mini-database/alignm
 experimental.nt_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nt
 experimental.nt_loc_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nt_loc.marisa
 experimental.nt_info_db: s3://czid-public-references/test/viral-alignment-indexes/viral_nt_info.marisa
+use_deuterostome_filter: true

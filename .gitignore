@@ -6,3 +6,8 @@ pyrightconfig.json
 .venv
 .build-*
 .python_dependencies_installed
+
+.idea
+*.iml
+
+*.wdl.zip
