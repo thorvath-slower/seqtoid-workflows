@@ -1,0 +1,10 @@
+# .trivyignore — inherited-findings baseline (CZID-264: accept inherited, hard-fail on NEW only).
+# Captured 2026-06-27 from the first `trivy fs` (vuln+misconfig, HIGH/CRITICAL) over this repo.
+# Each entry is pre-existing and tracked for remediation separately, so the gate fails only on NEW findings.
+
+# --- Dependency vuln ---
+CVE-2026-41066    # lxml 4.9.1 (fixed 6.1.0) in workflows/amr/requirements.txt — major bump; remediate + test separately
+
+# --- Dockerfile misconfig (across the 13 images) — Dockerfile hardening (SEQTOID-64) ---
+DS-0002           # image user should not be 'root'
+DS-0029           # 'apt-get' missing '--no-install-recommends'
