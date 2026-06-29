@@ -1,0 +1,11 @@
+apiVersion: v2
+name: seqtoid-pipeline-runner
+description: >-
+  Self-hosted WDL pipeline engine (CZID-72): a miniwdl-on-Kubernetes runner that replaces the
+  AWS-coupled SWIPE (Step Functions + Batch) for the k3s / self-hosted profile. The runner executes
+  seqtoid-workflows WDL with miniwdl's Kubernetes backend (each WDL task -> a k8s Job), reading and
+  writing artifacts via an S3-compatible endpoint (MinIO on self-hosted). See
+  MINIWDL-ON-K8S-SPIKE-2026-06-29.md and K3S-PACKAGING-DESIGN-2026-06-29.md.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

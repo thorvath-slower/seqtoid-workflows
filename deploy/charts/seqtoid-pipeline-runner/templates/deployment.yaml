@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "seqtoid-pipeline-runner.fullname" . }}
+  labels:
+    {{- include "seqtoid-pipeline-runner.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "seqtoid-pipeline-runner.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "seqtoid-pipeline-runner.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "seqtoid-pipeline-runner.serviceAccountName" . }}
+      containers:
+        - name: runner
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: {{ .Values.command | toJson }}
+          env:
+            # miniwdl Kubernetes backend targets (the runner reads these to create per-task Jobs)
+            - name: MINIWDL__SCHEDULER__BACKEND
+              value: "kubernetes"
+            - name: MINIWDL__KUBERNETES__NAMESPACE
+              value: {{ .Values.miniwdl.taskNamespace | default .Release.Namespace | quote }}
+            - name: MINIWDL__KUBERNETES__SERVICE_ACCOUNT
+              value: {{ .Values.miniwdl.taskServiceAccount | default (include "seqtoid-pipeline-runner.serviceAccountName" .) | quote }}
+            # S3-compatible artifact store (MinIO on self-hosted) — the WDL reads/writes s3:// unchanged
+            - name: AWS_REGION
+              value: {{ .Values.storage.region | quote }}
+            - name: AWS_DEFAULT_REGION
+              value: {{ .Values.storage.region | quote }}
+            - name: AWS_ENDPOINT_URL_S3
+              value: {{ .Values.storage.endpoint | quote }}
+            - name: SEQTOID_WORKFLOWS_BUCKET
+              value: {{ .Values.storage.bucket | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.storage.credentialsSecret }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

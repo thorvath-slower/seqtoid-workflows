@@ -1,0 +1,41 @@
+# seqtoid-pipeline-runner (CZID-72) defaults — self-hosted miniwdl-on-k8s runner.
+image:
+  repository: registry.local/seqtoid-pipeline-runner   # offline mirror / local registry (#10/#205)
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+# The runner watches for run requests and invokes miniwdl with the Kubernetes backend.
+# Placeholder command — the runner service code is the implementation follow-up; the chart provides
+# the Deployment + RBAC + config it needs.
+command: ["seqtoid-pipeline-runner"]
+
+# S3-compatible artifact store. On self-hosted this is MinIO; the WDL reads/writes s3:// unchanged,
+# only the endpoint/creds differ.
+storage:
+  endpoint: "http://minio.seqtoid.svc.cluster.local:9000"
+  region: "us-east-1"
+  bucket: "seqtoid-workflows"
+  # credentials come from the secret named below (keys: AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY)
+  credentialsSecret: "seqtoid-pipeline-runner-storage"
+
+# miniwdl Kubernetes backend: each WDL task becomes a k8s Job in this namespace.
+miniwdl:
+  taskNamespace: ""          # "" => the release namespace
+  taskServiceAccount: ""     # "" => the runner SA (below); tasks need to run pods only
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    memory: 1Gi
+
+serviceAccount:
+  create: true
+  name: ""
+
+# RBAC the runner needs so miniwdl can create/track per-task Jobs + read their logs.
+rbac:
+  create: true
