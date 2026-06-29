@@ -6,9 +6,8 @@ image:
 
 replicaCount: 1
 
-# The runner watches for run requests and invokes miniwdl with the Kubernetes backend.
-# Placeholder command — the runner service code is the implementation follow-up; the chart provides
-# the Deployment + RBAC + config it needs.
+# The runner watches an S3-prefix request queue and invokes miniwdl with the Kubernetes backend.
+# `seqtoid-pipeline-runner` is the console entry point of the runner package (see ../../../runner).
 command: ["seqtoid-pipeline-runner"]
 
 # S3-compatible artifact store. On self-hosted this is MinIO; the WDL reads/writes s3:// unchanged,
