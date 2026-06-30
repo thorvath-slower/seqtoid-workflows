@@ -10,6 +10,11 @@ on:
         default: patch
       release_notes:
         description: A text message summarizing the changes in this release
+      confirm:
+        description: Type "release" to confirm — this releases AND triggers a deployment.
+        type: string
+        required: true
+        default: ""
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -19,8 +24,34 @@ env:
   LC_ALL: C.UTF-8
   LANG: C.UTF-8
 
+# CZID-165 — promotion gating. release_workflows.yml releases a WDL workflow AND triggers its
+# deployment in one shot (scripts/release.sh), so it is effectively the prod-deploy path. Two gates
+# are layered on, consistent with the platform pattern (web-infra promote.yml / CZID-96):
+#   1. an explicit typed-confirmation guard (no accidental dispatch), and
+#   2. the `release` GitHub Environment on the release job — once that Environment has required
+#      reviewers (CZID-81), a release/deploy needs human approval before it runs.
+concurrency:
+  # One release at a time; never cancel an in-flight release/deploy.
+  group: release-workflows
+  cancel-in-progress: false
+
 jobs:
+  guard:
+    name: Confirm release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require explicit confirmation
+        run: |
+          if [[ "${{ inputs.confirm }}" != "release" ]]; then
+            echo "::error::Type 'release' in the confirm input to release + deploy a WDL workflow."
+            exit 1
+          fi
+
   create_release:
+    needs: guard
+    # CZID-165/CZID-81: gate the release+deploy behind the `release` Environment's protection rules
+    # (required reviewers) — the explicit human approval gate before anything reaches the deploy path.
+    environment: release
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
