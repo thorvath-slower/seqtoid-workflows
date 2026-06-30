@@ -1,0 +1,21 @@
+name: idseq-dag unit tests
+
+# The vendored idseq-dag lib (used by short-read-mngs, long-read-mngs and
+# legacy-host-filter) had no CI coverage and silently rotted on modern
+# toolchains. This runs its portable green core unit suite on every PR/push.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  idseq-dag-tests:
+    name: idseq-dag core unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: bash lib/idseq-dag/run_idseq_dag_tests.sh
