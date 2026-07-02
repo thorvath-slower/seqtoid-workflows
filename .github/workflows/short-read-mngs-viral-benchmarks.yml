@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 2
       - id: check_for_diff
         # only run on wdl dirs with diff
-        run: echo "has_diff=$(if `git diff --name-status HEAD^|cut -f2-|xargs dirname|sort|uniq|grep -q short-read-mngs`; then echo true; else echo false; fi)" >> "$GITHUB_OUTPUT"
+        run: echo "has_diff=$(if git diff --name-status HEAD^|cut -f2-|xargs dirname|sort|uniq|grep -q short-read-mngs; then echo true; else echo false; fi)" >> "$GITHUB_OUTPUT"
   run-samples:
     runs-on: ubuntu-22.04
     needs: has-diff
@@ -42,6 +42,7 @@ jobs:
             IMAGE_NAME=czid-short-read-mngs-public
             IMAGE_URI="ghcr.io/${GITHUB_REPOSITORY}/${IMAGE_NAME}"
             CACHE_FROM=""; docker pull "$IMAGE_URI" && CACHE_FROM="--cache-from $IMAGE_URI"
+            # shellcheck disable=SC2086  # intentional word-split: $CACHE_FROM is empty or a "--cache-from URI" flag pair
             ./scripts/docker-build.sh workflows/short-read-mngs --tag czid-short-read-mngs $CACHE_FROM \
                 || scripts/docker-build.sh workflows/short-read-mngs --tag czid-short-read-mngs
       - name: run sample
@@ -51,7 +52,8 @@ jobs:
           export PATH=$PATH:$HOME/.local/bin
           export MINIWDL__DOWNLOAD_CACHE__GET=true
           export MINIWDL__DOWNLOAD_CACHE__PUT=true
-          export MINIWDL__DOWNLOAD_CACHE__DIR="$(mktemp -d --tmpdir miniwdl_download_cache_XXXXXX)"
+          MINIWDL__DOWNLOAD_CACHE__DIR="$(mktemp -d --tmpdir miniwdl_download_cache_XXXXXX)"
+          export MINIWDL__DOWNLOAD_CACHE__DIR
           # configure miniwdl to auto-delete task working directories, to reduce chance of worker
           # running out of space
           export MINIWDL__FILE_IO__OUTPUT_HARDLINKS=true
@@ -94,31 +96,32 @@ jobs:
       - name: run notebook
         run: |
           TAG=$(git describe --long --tags --always --dirty)
-          cp *_viral.json workflows/short-read-mngs/auto_benchmark  # notebook wd
+          cp ./*_viral.json workflows/short-read-mngs/auto_benchmark  # notebook wd
           chmod -R 777 workflows/short-read-mngs/auto_benchmark
           # execute notebook
-          docker run -v $(pwd)/workflows:/home/jovyan/work --workdir /home/jovyan/work \
+          # shellcheck disable=SC2012  # simple glob-only listing joined by tr; find not needed for *_viral.json
+          docker run -v "$(pwd)/workflows:/home/jovyan/work" --workdir /home/jovyan/work \
             --env "RUN_NAME=${{ matrix.settings }}_viral_$TAG" \
-            --env HARVEST_DATA=$(ls -1 *_viral.json | tr '\n' ':') \
+            --env "HARVEST_DATA=$(ls -1 ./*_viral.json | tr '\n' ':')" \
             --env REF_LIB=/home/jovyan/work/short-read-mngs/auto_benchmark/ref_libs/${{ matrix.settings }}_viral \
             --env CHOWN_HOME=yes \
                 jupyter/scipy-notebook:2022-03-14 jupyter nbconvert --to notebook --execute --inplace \
                     short-read-mngs/auto_benchmark/short-read-mngs-benchmarks.ipynb
           cp workflows/short-read-mngs/auto_benchmark/short-read-mngs-benchmarks.ipynb short-read-mngs-benchmarks.${{ matrix.settings }}_viral.ipynb
           # make HTML with code
-          docker run -v $(pwd)/workflows:/home/jovyan/work --workdir /home/jovyan/work \
+          docker run -v "$(pwd)/workflows:/home/jovyan/work" --workdir /home/jovyan/work \
                 jupyter/scipy-notebook:2022-03-14 jupyter nbconvert --to html \
                     short-read-mngs/auto_benchmark/short-read-mngs-benchmarks.ipynb
           mv workflows/short-read-mngs/auto_benchmark/short-read-mngs-benchmarks.html short-read-mngs-benchmarks.${{ matrix.settings }}_viral.with_code.html
           # make HTML without code
-          docker run -v $(pwd)/workflows:/home/jovyan/work --workdir /home/jovyan/work \
+          docker run -v "$(pwd)/workflows:/home/jovyan/work" --workdir /home/jovyan/work \
                 jupyter/scipy-notebook:2022-03-14 jupyter nbconvert --to html --no-input \
                     short-read-mngs/auto_benchmark/short-read-mngs-benchmarks.ipynb
           mv workflows/short-read-mngs/auto_benchmark/short-read-mngs-benchmarks.html short-read-mngs-benchmarks.${{ matrix.settings }}_viral.html
           mkdir ref_libs
           cp -r workflows/short-read-mngs/auto_benchmark/ref_libs/${{ matrix.settings }}_viral ref_libs/
       - name: test harvest2.py
-        run: workflows/short-read-mngs/auto_benchmark/harvest2.py *_viral.json --version "$(git describe --long --tags --always --dirty)" --index-version 2021-01-22 --wall 999
+        run: workflows/short-read-mngs/auto_benchmark/harvest2.py ./*_viral.json --version "$(git describe --long --tags --always --dirty)" --index-version 2021-01-22 --wall 999
       - uses: actions/upload-artifact@v4
         with:
           name: short-read-mngs-benchmarks.${{ matrix.settings }}_viral.html
