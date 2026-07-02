@@ -40,13 +40,13 @@ jobs:
   #       run: |
   #         source .venv/bin/activate
   #         make lint
-  #     - uses: andymckay/cancel-action@0.2
+  #     - uses: andymckay/cancel-action@8f8510d9dea52fcc8eb6ca10d6ce47fd5fc43cd8 # 0.2
   #       if: ${{ failure() }}
 
   # cancel-previous:
   #   runs-on: ubuntu-22.04
   #   steps:
-  #     - uses: styfle/cancel-workflow-action@0.9.0
+  #     - uses: styfle/cancel-workflow-action@89f242ee29e10c53a841bfe71cc0ce7b2f065abc # 0.9.0
   #       with:
   #         access_token: ${{ github.token }}
 
@@ -83,7 +83,7 @@ jobs:
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
       - name: Login to ECR
-        uses: docker/login-action@v4
+        uses: docker/login-action@c99871dec2022cc055c062a10cc1a1310835ceb4 # v4
         with:
             registry: ${{ env.CI_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ matrix.workflow_dir }}
       - name: docker build + push to ECR
