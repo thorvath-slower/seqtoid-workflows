@@ -1,7 +1,11 @@
 name: short-read-mngs viral benchmarks
 
 on:
-  push
+  # C19: was `on: push` (every push, every branch) — a full pipeline + notebook
+  # run. Limit the automatic run to main; use the dispatch button for ad-hoc runs.
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 env:
   LC_ALL: C.UTF-8
@@ -26,7 +30,7 @@ jobs:
           fetch-depth: 2
       - id: check_for_diff
         # only run on wdl dirs with diff
-        run: echo "::set-output name=has_diff::$(if `git diff --name-status HEAD^|cut -f2-|xargs dirname|sort|uniq|grep -q short-read-mngs`; then echo true; else echo false; fi)"
+        run: echo "has_diff=$(if `git diff --name-status HEAD^|cut -f2-|xargs dirname|sort|uniq|grep -q short-read-mngs`; then echo true; else echo false; fi)" >> "$GITHUB_OUTPUT"
 
   run-samples:
     runs-on: ubuntu-22.04
