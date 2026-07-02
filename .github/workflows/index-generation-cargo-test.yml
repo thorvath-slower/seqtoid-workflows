@@ -28,6 +28,7 @@ jobs:
           IMAGE_URI="ghcr.io/${GITHUB_REPOSITORY}/${IMAGE_NAME}"
 
           CACHE_FROM=""; docker pull "$IMAGE_URI" && CACHE_FROM="--cache-from $IMAGE_URI"
+          # shellcheck disable=SC2086  # intentional word-split: $CACHE_FROM is empty or a "--cache-from URI" flag pair
           ./scripts/docker-build.sh "workflows/index-generation" --tag "${IMAGE_URI}:${TAG}" $CACHE_FROM \
             || ./scripts/docker-build.sh "workflows/index-generation" --tag "${IMAGE_URI}:${TAG}"
           docker push "${IMAGE_URI}:${TAG}"
@@ -36,8 +37,8 @@ jobs:
             docker push "${IMAGE_URI}:latest"
           fi
 
-          echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
-          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "IMAGE_URI=${IMAGE_URI}" >> "$GITHUB_ENV"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
       - name: run cargo tests
         run: |
           make cargo-test-index-generation
