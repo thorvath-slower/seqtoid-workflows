@@ -5,8 +5,8 @@
 exact file path and in-file location of each. If it's in the "human-maintained" table,
 nothing will remind you — so this list is how we avoid silently drifting.
 
-> ⚠️ **Renovate is configured (`renovate.json`, added in CZID-145) but the GitHub app
-> is not enabled yet (CZID-212).** No Renovate branch / Dependency Dashboard / PR
+> ⚠️ **Renovate is configured (`renovate.json`) but the GitHub app
+> is not enabled yet.** No Renovate branch / Dependency Dashboard / PR
 > history in this fork. Until the app is on, *everything* below is effectively
 > human-maintained. The "Automated" table describes what Renovate *will* cover once on.
 
@@ -28,7 +28,7 @@ nothing will remind you — so this list is how we avoid silently drifting.
 | A5 | Pinned reference-data S3 paths (dated snapshots) | `short-read-mngs/non_host_alignment.wdl` / `postprocess.wdl` / `experimental.wdl` (`s3://czid-public-references/.../2021-01-22/…`); `amr/run.wdl` (`card/2023-05-22/…`); `consensus-genome/run.wdl`; `short-read-mngs/host_filter_defaults.yml` | Hardcoded bucket + dated reference DB versions; pipeline-science decision, no updater | Update the date/path by hand when reference data is regenerated; coordinate with index-generation |
 | A6 | Reference data baked into images | `amr/Dockerfile:39` (`curl …czid-public-references…/card/2023-05-22/card.json`) | Bucket + dated path baked into Dockerfile | Bump path; rebuild |
 | A7 | Hardcoded S3 buckets / AWS asset URLs | `short-read-mngs/Dockerfile` (ecr-credential-helper, gsnap, RAPSearch2 asset URLs); `legacy-host-filter/Dockerfile`; `short-read-mngs/auto_benchmark/run_dev.py` (`idseq-samples-development`) | Bucket names / legacy asset URLs are infra constants | Manual; change only with infra coordination |
-| A8 | `requirements-dev.txt` (root) pins | `requirements-dev.txt` (whole file — miniwdl, pytest, boto3, biopython, …) | Pinned deliberately (CZID-46). Renovate `pip_requirements` *would* group-bump these once enabled, but per CZID-46 they are held manual — confirm policy before letting Renovate touch them | Bump by hand; run `bin/ci-local` |
+| A8 | `requirements-dev.txt` (root) pins | `requirements-dev.txt` (whole file — miniwdl, pytest, boto3, biopython, …) | Pinned deliberately. Renovate `pip_requirements` *would* group-bump these once enabled, but they are held manual — confirm policy before letting Renovate touch them | Bump by hand; run `bin/ci-local` |
 | A9 | Per-workflow `requirements*.txt` pins | `workflows/amr/requirements.txt`, `workflows/phylotree-ng/requirements.txt`, `workflows/index-generation/requirements.txt`, `workflows/bulk-download/requirements.txt`, `workflows/benchmark/requirements-dev.txt` | Same as A8 — Renovate `pip_requirements` *would* cover these once on; today nothing tracks them | Bump by hand until Renovate is enabled |
 | A10 | Rust crate + toolchain pins | `workflows/index-generation/ncbi-compress/Cargo.toml` → `[dependencies]` + `[toolchain] channel = "nightly"`; Dockerfile `RUST_VERSION=1.70.0` | Renovate `cargo` *would* cover `[dependencies]`; the `nightly` channel + Dockerfile `RUST_VERSION` are manual regardless and can drift from each other | Bump crate versions / toolchain by hand |
 | A11 | Third-party Actions pinned to specific versions | `.github/workflows/short-read-mngs-viral-benchmarks.yml:15` & `wdl-ci-integration.yml:15` (`styfle/cancel-workflow-action@0.9.0`) | Renovate github-actions *would* track these once on; until then manual | Bump tag by hand |
@@ -43,7 +43,7 @@ nothing will remind you — so this list is how we avoid silently drifting.
 |---|------|--------------------------------|---------------|
 | B1 | Python runtime version (SSOT) | `.python-version` → `3.10` | SSOT version file; consumed by `bin/ci-local` + `Makefile`. (No Renovate manager reads it — human-bumped, consumed everywhere) |
 | B2 | Dockerfile base images (`FROM`) | `workflows/*/Dockerfile` `FROM` (e.g. `benchmark/Dockerfile` `quay.io/jupyter/scipy-notebook@sha256:…`; the many `FROM ubuntu:18.04/20.04/22.04`) | Renovate `dockerfile` manager → "docker base images" group; `pinDigests:true` will add `@sha256` to the currently-unpinned `ubuntu` bases |
-| B3 | Python pip dependencies | `requirements-dev.txt`, `workflows/*/requirements*.txt` | Renovate `pip_requirements` → "pip deps" group. *Overlaps A8/A9 — root `requirements-dev.txt` was hand-pinned under CZID-46; confirm before auto-bumping* |
+| B3 | Python pip dependencies | `requirements-dev.txt`, `workflows/*/requirements*.txt` | Renovate `pip_requirements` → "pip deps" group. *Overlaps A8/A9 — root `requirements-dev.txt` was hand-pinned; confirm before auto-bumping* |
 | B4 | Rust (Cargo) dependencies | `workflows/index-generation/ncbi-compress/Cargo.toml` → `[dependencies]` | Renovate `cargo` → "cargo deps" group |
 | B5 | First-party GitHub Actions `uses:` | `.github/workflows/*.yml` (`actions/checkout@v6`, `actions/cache@v4`, `upload/download-artifact@v4`, `aws-actions/configure-aws-credentials@v4`, `docker/login-action@v4`) | Renovate `github-actions` → "github actions" group |
 | B6 | Security/vulnerability alerts | repo-wide deps | Renovate `vulnerabilityAlerts.enabled: true` |
