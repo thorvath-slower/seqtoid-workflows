@@ -34,8 +34,8 @@ jobs:
           source /etc/profile
           sudo apt-get -qq update
           sudo apt-get -qq install -o=Dpkg::Use-Pty=0 --yes jq moreutils gettext httpie git curl
-          curl -OLs https://github.com/cli/cli/releases/download/v${GH_CLI_VERSION}/gh_${GH_CLI_VERSION}_linux_amd64.deb
-          sudo dpkg -i gh_${GH_CLI_VERSION}_linux_amd64.deb
+          curl -OLs "https://github.com/cli/cli/releases/download/v${GH_CLI_VERSION}/gh_${GH_CLI_VERSION}_linux_amd64.deb"
+          sudo dpkg -i "gh_${GH_CLI_VERSION}_linux_amd64.deb"
       # Note: the triggered action will use the current revision of the BENCHMARKING code in this
       # repo (env.GITHUB_SHA). However, it will run the vX.Y.Z point release of the short-read-mngs
       # WORKFLOW code specified in the user inputs.
