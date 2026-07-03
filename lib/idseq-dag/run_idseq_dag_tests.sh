@@ -6,8 +6,9 @@
 # unnoticed again.
 #
 # Scoped out (tracked in CZID-350): command_patterns' macOS /tmp
-# path fragility, the deeper steps/* suites' collection errors, and migrating
-# util/command.py off the deprecated pkg_resources.
+# path fragility and the deeper steps/* suites' collection errors.
+# (util/command.py has been migrated off deprecated pkg_resources to
+# importlib.resources.)
 #
 # Usage:  lib/idseq-dag/run_idseq_dag_tests.sh   (PYTHON=python3.12 to pin)
 set -euo pipefail
@@ -20,8 +21,7 @@ venv="$(mktemp -d)/v"
 # shellcheck disable=SC1091
 . "$venv/bin/activate"
 pip install -q --upgrade pip
-# editable install also exercises setup.py (validates the __version__ fix);
-# setuptools provides pkg_resources (still used by util/command.py for now).
+# editable install also exercises setup.py (validates the __version__ fix).
 pip install -q -e . setuptools pytest
 
 PYTHONPATH=. python -m pytest \
