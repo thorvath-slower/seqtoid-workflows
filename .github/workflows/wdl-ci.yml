@@ -66,7 +66,14 @@ jobs:
   wdl-ci:
     runs-on: ubuntu-22.04
     needs: list-workflow-dirs
-    if: ${{ needs['list-workflow-dirs'].outputs.matrix != '[]' && needs['list-workflow-dirs'].outputs.matrix != '' }}
+    # Fork guard (#581): this job assumes an AWS IAM role via OIDC (configure aws credentials
+    # below) and pushes to ECR, which only the canonical repo's AWS account trusts. This
+    # workflow is push-triggered, so on a contributor's fork the push runs here and the role
+    # assume fails, blocking otherwise-good work. github.event.repository.fork is true only on
+    # forks, so skip there. NOTE: this is a SKIP, not a silent pass -- the WDL CI build/tests
+    # (short/long-read-mngs, etc.) do not run on forks; they run in full on the canonical repo.
+    # Making forks able to assume the role is a separate, AWS-gated change (#581 part 2).
+    if: ${{ github.event.repository.fork == false && needs['list-workflow-dirs'].outputs.matrix != '[]' && needs['list-workflow-dirs'].outputs.matrix != '' }}
     strategy:
       matrix:
         workflow_dir: ${{fromJson(needs['list-workflow-dirs'].outputs.matrix)}}
