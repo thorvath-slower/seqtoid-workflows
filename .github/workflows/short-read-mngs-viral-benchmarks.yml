@@ -1,7 +1,14 @@
 name: short-read-mngs viral benchmarks
 
 on:
-  push
+  # CZID-160: was bare `on: push` (ran on every push to every branch, with no
+  # pass/fail consequence). Gate it: run on PRs that touch short-read-mngs, on
+  # pushes to main, and on-demand via the dispatch button. The has-diff job below
+  # still scopes the actual work to short-read-mngs changes.
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 env:
   LC_ALL: C.UTF-8
@@ -131,10 +138,26 @@ jobs:
               short-read-mngs-benchmarks.${{ matrix.settings }}_viral.*
               *.${{ matrix.settings }}_viral.json
               ref_libs/
+      - name: benchmark correctness gate
+        # CZID-160: hard pass/fail gate. The fast CI viral benchmark gates on
+        # <1% DEVIATION from the pinned reference library (its absolute AUPRs are
+        # ~0.2-0.4 on the mini viral DB, so the 0.98 floor is NOT applied here --
+        # that floor belongs to the full-index benchmark). Non-zero exit fails
+        # the job, which is what turns the benchmark into a gate.
+        run: |
+          pip install -r requirements-dev.txt >/dev/null
+          workflows/short-read-mngs/auto_benchmark/benchmark_gate.py \
+            ./*.${{ matrix.settings }}_viral.json \
+            --ref-lib workflows/short-read-mngs/auto_benchmark/ref_libs/${{ matrix.settings }}_viral \
+            --tolerance 0.01
       - name: annotate deviations
+        # Belt-and-suspenders: the notebook also drops a sentinel on any >1%
+        # deviation. Fail on it too, so a deviation is caught even if the metric
+        # set the gate reads and the notebook's ever drift apart.
         run: |
           if [[ -f workflows/short-read-mngs/auto_benchmark/.short-read-mngs-benchmarks-deviation ]]; then
-            echo "::warning ::auto_benchmark detected >1% deviation from reference values; review the notebook and update reference library if needed."
+            echo "::error ::auto_benchmark detected >1% deviation from reference values; review the notebook and update the reference library if this change is intended."
+            exit 1
           else
             echo "auto_benchmark OK (all metrics within 1% of reference values)"
           fi
