@@ -1,6 +1,6 @@
 name: security
 
-# Calls the shared reusable security workflow — the SSOT in thorvath-slower/ci-workflows (CZID-310 / 183).
+# Calls the shared reusable security workflow -- the SSOT in thorvath-slower/seqtoid-ci-workflows (CZID-310 / 183).
 # seqtoid-workflows ships 13 Dockerfiles + Python/Rust and had NO security scanning; this adds the
 # secret (gitleaks) + dependency-vuln / Dockerfile-misconfig (trivy) gate every other repo already runs.
 # Inherited findings are baselined in .trivyignore + .gitleaks.toml (CZID-264: hard-fail on NEW only).
@@ -18,6 +18,6 @@ on:
 
 jobs:
   security:
-    uses: thorvath-slower/ci-workflows/.github/workflows/security.yml@v1
+    uses: thorvath-slower/seqtoid-ci-workflows/.github/workflows/security.yml@v1
     with:
       run_checkov: ${{ inputs.run_checkov || false }}
