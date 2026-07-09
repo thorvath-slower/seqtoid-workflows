@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 AS s3quilt
+FROM ubuntu:22.04 AS s3quilt
 
 RUN apt-get update && apt-get install -y curl python3-pip
 
@@ -24,6 +24,6 @@ RUN cp -r s3quilt/ /usr/lib/python3/dist-packages/s3quilt/
 
 WORKDIR /root
 
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 RUN apt-get update && apt-get install  -y python3-pip
 COPY --from=s3quilt /usr/lib/python3/dist-packages/s3quilt/ /usr/lib/python3/dist-packages/s3quilt/

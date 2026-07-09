@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM ubuntu:18.04 AS s3quilt
+FROM ubuntu:22.04 AS s3quilt
 
 RUN apt-get update && apt-get install -y curl python3-pip
 
@@ -23,7 +23,7 @@ RUN gopy build -vm=python3 --output s3quilt .
 COPY --from=lib s3quilt/__init__.py s3quilt/
 RUN cp -r s3quilt/ /usr/lib/python3/dist-packages/
 
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MINIWDL_VERSION=1.1.5
 
@@ -51,7 +51,7 @@ RUN apt-get -q update && apt-get -q install -y \
         liblzma-dev \
         software-properties-common \
         libarchive-tools \
-        liblz4-tool \
+        lz4 \
         lbzip2 \
         docker.io \
         python3-dev \
@@ -138,8 +138,11 @@ RUN apt-get install -y \
         libperl4-corelibs-perl \
         make \
         # Runtime dependencies
-        # On versions higher than 1.62 compilation errors because of an overloading ambiguity with the `advance` method
-        libboost1.62-all-dev
+        # NOTE: libboost1.62-all-dev is not packaged on ubuntu:22.04 (jammy ships boost 1.74).
+        # rapsearch2 historically hit an overloading ambiguity on the advance() method with
+        # boost > 1.62; if the rapsearch2 build below fails on jammy it must be patched or built
+        # against a pinned boost 1.62. See PR notes for CZID-202.
+        libboost-all-dev
 
 
 # install gsnap, we are using a pinned version for alignment
