@@ -1,7 +1,17 @@
 name: WDL CI
 
+# CZID-581 pt1: the wdl-ci job below assumes an AWS IAM role via OIDC and pushes to ECR. On a
+# public repo a pull_request run's OIDC subject (repo:ORG/REPO:pull_request) is indistinguishable
+# from an anonymous fork PR, so the CI role correctly denies it -- any pull_request trigger would go
+# red. Keep this AWS-touching workflow OFF pull_request; run it on push and on the merge queue
+# (merge_group) so AWS validation lands on already-reviewed code, plus manual workflow_dispatch.
+# Non-AWS PR coverage (idseq-dag unit tests, security scan) lives in separate pull_request
+# workflows and is unchanged. Part 2 (enable the merge queue + trust refs/heads/main and the
+# gh-readonly-queue ref in the CI role trust policy) is AWS-gated and still required for green runs.
 on:
-  push
+  merge_group:
+  push:
+  workflow_dispatch:
 
 env:
   LC_ALL: C.UTF-8
