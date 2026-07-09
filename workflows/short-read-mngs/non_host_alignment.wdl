@@ -286,12 +286,12 @@ workflow czid_non_host_alignment {
     File duplicate_cluster_sizes_tsv
     File czid_dedup_out_duplicate_clusters_csv
     String index_version = "2021-01-22"
-    File lineage_db = "s3://czid-public-references/taxonomy/2021-01-22/taxid-lineages.db"
-    File accession2taxid_db = "s3://czid-public-references/alignment_data/2021-01-22/accession2taxid.db"
-    File taxon_blacklist = "s3://czid-public-references/taxonomy/2021-01-22/taxon_blacklist.txt"
+    File lineage_db = "s3://seqtoid-public-references/taxonomy/2021-01-22/taxid-lineages.db"
+    File accession2taxid_db = "s3://seqtoid-public-references/alignment_data/2021-01-22/accession2taxid.db"
+    File taxon_blacklist = "s3://seqtoid-public-references/taxonomy/2021-01-22/taxon_blacklist.txt"
     String index_dir_suffix = index_version
     Int min_read_length = 36
-    File deuterostome_db = "s3://czid-public-references/taxonomy/2021-01-22/deuterostome_taxids.txt"
+    File deuterostome_db = "s3://seqtoid-public-references/taxonomy/2021-01-22/deuterostome_taxids.txt"
     Boolean use_deuterostome_filter = true
     Boolean use_taxon_whitelist = false
     Boolean alignment_scalability = false
@@ -300,8 +300,8 @@ workflow czid_non_host_alignment {
     File? diamond_local_db_path
     String? local_gsnap_genome_name
     File? local_rapsearch2_index
-    String minimap2_db = "s3://czid-public-references/minimap2-test/2021-01-22/nt_k14_w8_20/"
-    String diamond_db = "s3://czid-public-references/diamond-test/2021-01-22/"
+    String minimap2_db = "s3://seqtoid-public-references/minimap2-test/2021-01-22/nt_k14_w8_20/"
+    String diamond_db = "s3://seqtoid-public-references/diamond-test/2021-01-22/"
     String minimap2_args = "-cx sr --secondary=yes"
     String diamond_args = "--mid-sensitive"
     String minimap2_prefix = "gsnap"
