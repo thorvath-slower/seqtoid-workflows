@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MINIWDL_VERSION=1.1.5
 
@@ -27,7 +27,7 @@ RUN apt-get -q update && apt-get -q install -y \
         liblzma-dev \
         software-properties-common \
         libarchive-tools \
-        liblz4-tool \
+        lz4 \
         lbzip2 \
         docker.io \
         python3-dev \
