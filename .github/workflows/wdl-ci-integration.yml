@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 2
       - id: list_dirs
         # only run on wdl dirs with diff
-        run: echo "matrix=$(./scripts/diff-workflows.sh |jq -cnR '[inputs|select(length>0)]')" >> $GITHUB_OUTPUT
+        run: echo "matrix=$(./scripts/diff-workflows.sh |jq -cnR '[inputs|select(length>0)]')" >> "$GITHUB_OUTPUT"
 
   wdl-ci:
     runs-on: ubuntu-latest
@@ -43,8 +43,8 @@ jobs:
           IMAGE_NAME=czid-${{ matrix.workflow_dir }}-public
           IMAGE_URI="ghcr.io/${GITHUB_REPOSITORY}/${IMAGE_NAME}"
 
-          CACHE_FROM=""; docker pull "$IMAGE_URI" && CACHE_FROM="--cache-from $IMAGE_URI"
-          ./scripts/docker-build.sh "workflows/${{ matrix.workflow_dir }}" --tag "${IMAGE_URI}:${TAG}" $CACHE_FROM \
+          CACHE_FROM=(); docker pull "$IMAGE_URI" && CACHE_FROM=(--cache-from "$IMAGE_URI")
+          ./scripts/docker-build.sh "workflows/${{ matrix.workflow_dir }}" --tag "${IMAGE_URI}:${TAG}" "${CACHE_FROM[@]}" \
             || ./scripts/docker-build.sh "workflows/${{ matrix.workflow_dir }}" --tag "${IMAGE_URI}:${TAG}"
             # docker push "${IMAGE_URI}:${TAG}" don't push while testing
           if [[ ${GITHUB_REF##*/} == "main" ]]; then
@@ -52,8 +52,8 @@ jobs:
             # docker push "${IMAGE_URI}:latest" don't push while testing
           fi
 
-          echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
-          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "IMAGE_URI=${IMAGE_URI}" >> "$GITHUB_ENV"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
       - name: run tests
         run: |
           [ -d "${{ matrix.workflow_dir }}/integration_test" ] || exit 0
