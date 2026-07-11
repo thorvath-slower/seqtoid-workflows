@@ -56,7 +56,7 @@ jobs:
         with:
           fetch-depth: 2
       - id: list_dirs
-        run: echo "matrix=$(./scripts/diff-workflows.sh |jq -cnR '[inputs|select(length>0)]')" >> $GITHUB_OUTPUT
+        run: echo "matrix=$(./scripts/diff-workflows.sh |jq -cnR '[inputs|select(length>0)]')" >> "$GITHUB_OUTPUT"
       - id: echo_output
         run: echo "$GITHUB_OUTPUT"
 
@@ -95,8 +95,8 @@ jobs:
           TAG=$(git describe --long --tags --always --dirty)
           IMAGE_URI="${{ env.CI_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ matrix.workflow_dir }}"
 
-          CACHE_FROM=""; docker pull "$IMAGE_URI" && CACHE_FROM="--cache-from $IMAGE_URI"
-          ./scripts/docker-build.sh "workflows/${{ matrix.workflow_dir }}" --tag "${IMAGE_URI}:${TAG}" $CACHE_FROM \
+          CACHE_FROM=(); docker pull "$IMAGE_URI" && CACHE_FROM=(--cache-from "$IMAGE_URI")
+          ./scripts/docker-build.sh "workflows/${{ matrix.workflow_dir }}" --tag "${IMAGE_URI}:${TAG}" "${CACHE_FROM[@]}" \
             || ./scripts/docker-build.sh "workflows/${{ matrix.workflow_dir }}" --tag "${IMAGE_URI}:${TAG}"
           docker push "${IMAGE_URI}:${TAG}"
           if [[ ${GITHUB_REF##*/} == "main" ]]; then
@@ -104,8 +104,8 @@ jobs:
             docker push "${IMAGE_URI}:latest"
           fi
 
-          echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
-          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "IMAGE_URI=${IMAGE_URI}" >> "$GITHUB_ENV"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
       - name: run tests
         run: |
           # explicitly block EC2 IMDS endpoint to work around awscli issue:
@@ -119,7 +119,8 @@ jobs:
           export MINIWDL__FILE_IO__DELETE_WORK=success
           export MINIWDL__DOWNLOAD_CACHE__GET=true
           export MINIWDL__DOWNLOAD_CACHE__PUT=true
-          export MINIWDL__DOWNLOAD_CACHE__DIR="$(mktemp -d --tmpdir miniwdl_download_cache_XXXXXX)"
+          MINIWDL__DOWNLOAD_CACHE__DIR="$(mktemp -d --tmpdir miniwdl_download_cache_XXXXXX)"
+          export MINIWDL__DOWNLOAD_CACHE__DIR
 
           source /etc/profile
           sudo apt-get -qq update
