@@ -26,7 +26,6 @@ def miniwdl_run(*args, returncode=0):
     miniwdl_run(*args, returncode) passes the command-line arguments list (usually the WDL filename, followed by
     inputs) through to `miniwdl run`, checks its exit status == returncode, and returns its parsed JSON stdout.
     """
-    # global _miniwdl_run_dir
     assert _miniwdl_run_dir
 
     args = (

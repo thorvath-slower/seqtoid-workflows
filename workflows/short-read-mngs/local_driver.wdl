@@ -1,4 +1,4 @@
-version 1.1
+version 1.0
 # local_driver.wdl: this top-level workflow runs the four stages (host_filter, non_host_alignment,
 # postprocess, experimental) in sequence. The IDseq back-end invokes those four WDLs separately
 # for various reasons, which is effectively the same as running this locally.
@@ -19,7 +19,6 @@ workflow czid_short_read_mngs {
         String diamond_args
         String non_host_gsnap_genome_name = "nt_k16"
         String s3_wd_uri = ""
-        Boolean use_deuterostome_filter = true
     }
     call stage1.czid_host_filter as host_filter {
         input:
@@ -40,8 +39,7 @@ workflow czid_short_read_mngs {
         diamond_local_db_path = diamond_local_db_path,
         diamond_args = diamond_args,
         docker_image_id = docker_image_id,
-        s3_wd_uri = s3_wd_uri,
-        use_deuterostome_filter = use_deuterostome_filter
+        s3_wd_uri = s3_wd_uri
     }
     call stage3.czid_postprocess as postprocess {
         input:
@@ -59,8 +57,7 @@ workflow czid_short_read_mngs {
         rapsearch2_out_rapsearch2_hitsummary_tab = non_host_alignment.rapsearch2_out_rapsearch2_hitsummary_tab,
         rapsearch2_out_rapsearch2_counts_with_dcr_json = non_host_alignment.rapsearch2_out_rapsearch2_counts_with_dcr_json,
         docker_image_id = docker_image_id,
-        s3_wd_uri = s3_wd_uri,
-        use_deuterostome_filter = use_deuterostome_filter
+        s3_wd_uri = s3_wd_uri
     }
     call stage4.czid_experimental as experimental {
         input:

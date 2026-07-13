@@ -530,4 +530,4 @@ class PipelineStepRunStar(PipelineStep):
 
     @staticmethod
     def unmapped_files_in(folder, num_inputs):
-        return [f"{folder}/Unmapped.out.mate{i + 1}" for i in range(num_inputs)]
+        return [f"{folder}/Unmapped.out.mate{i+1}" for i in range(num_inputs)]

@@ -1,0 +1,14 @@
+# gitleaks config for seqtoid-workflows.
+# Extends the default ruleset and allowlists VERIFIED FALSE POSITIVES (CZID-318): the generic-api-key
+# rule misfires on high-entropy substrings inside FASTA test fixtures (genomic sequence data from the
+# NR RefSeq database) — these are sequence reads, not secrets.
+title = "seqtoid-workflows gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Verified false positives (CZID-318): genomic sequence data in FASTA test fixtures, not secrets."
+paths = [
+  '''tests/.*\.fasta$''',
+]

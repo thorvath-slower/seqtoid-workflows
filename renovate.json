@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":maintainLockFilesDisabled"
+  ],
+  "timezone": "America/Los_Angeles",
+  "schedule": ["before 9am on monday"],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "rebaseWhen": "conflicted",
+  "pinDigests": true,
+  "packageRules": [
+    {
+      "description": "Group the per-workflow + dev pip deps (requirements-dev.txt + workflows/*/requirements*.txt).",
+      "matchManagers": ["pip_requirements"],
+      "groupName": "pip deps"
+    },
+    {
+      "description": "Group the per-workflow Docker base images (preserves any pinned @sha256 digests).",
+      "matchManagers": ["dockerfile"],
+      "groupName": "docker base images"
+    },
+    {
+      "description": "Group the index-generation Rust (Cargo) deps.",
+      "matchManagers": ["cargo"],
+      "groupName": "cargo deps"
+    },
+    {
+      "description": "Group GitHub Actions bumps into one PR.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true
+  }
+}

@@ -29,6 +29,7 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
+
 # mitigation for TooManyRequestExceptions
 config = Config(
     retries={
@@ -36,6 +37,7 @@ config = Config(
         "mode": "adaptive",
     }
 )
+
 
 _batch_client = boto3.client("batch", config=config)
 # the retries are less necessary for S3 because rate limiting is more generous but we have hit the limit
@@ -95,7 +97,6 @@ class BatchJobCache:
     The output should always be the same if the inputs are the same, however we also incorporate the batch_args
     into the cache because a retry on spot vs on demand will result in a different batch queue.
     """
-
     def __init__(self, bucket: str, prefix: str, inputs: Dict[str, str]):
         self.bucket = bucket
         self.prefix = prefix
@@ -127,12 +128,12 @@ class BatchJobCache:
 
 
 def _run_batch_job(
-        job_name: str,
-        job_queue: str,
-        job_definition: str,
-        environment: Dict[str, str],
-        retries: int,
-        cache: BatchJobCache,
+    job_name: str,
+    job_queue: str,
+    job_definition: str,
+    environment: Dict[str, str],
+    retries: int,
+    cache: BatchJobCache,
 ):
     submit_args = {
         "jobName": job_name,
@@ -203,14 +204,14 @@ def _run_batch_job(
 
 
 def _run_chunk(
-        input_dir: str,
-        chunk_dir: str,
-        aligner: str,
-        aligner_args: str,
-        aligner_wdl_version: str,
-        queries: List[str],
-        chunk_id: int,
-        db_chunk: str,
+    input_dir: str,
+    chunk_dir: str,
+    aligner: str,
+    aligner_args: str,
+    aligner_wdl_version: str,
+    queries: List[str],
+    chunk_id: int,
+    db_chunk: str,
 ):
     deployment_environment = os.environ["DEPLOYMENT_ENVIRONMENT"]
     pattern = r"s3://.+/samples/([0-9]+)/([0-9]+)/"
@@ -246,7 +247,7 @@ def _run_chunk(
 
     wdl_output_uri = os.path.join(chunk_dir, f"{chunk_id}-output.json")
 
-    wdl_workflow_uri = f"s3://seqtoid-workflows-{deployment_environment}-{account_id}/{aligner}-{aligner_wdl_version}/{aligner}.wdl"  # noqa: E501
+    wdl_workflow_uri = f"s3://idseq-workflows/{aligner}-{aligner_wdl_version}/{aligner}.wdl"
 
     cache_prefix_uri = os.path.join(chunk_dir, "batch_job_cache/")
     cache_bucket, cache_prefix = _bucket_and_key(cache_prefix_uri)
@@ -305,13 +306,13 @@ def count_generator(gen):
 
 
 def run_alignment(
-        input_dir: str,
-        db_path: str,
-        result_path: str,
-        aligner: str,
-        aligner_args: str,
-        aligner_wdl_version: str,
-        queries: List[str],
+    input_dir: str,
+    db_path: str,
+    result_path: str,
+    aligner: str,
+    aligner_args: str,
+    aligner_wdl_version: str,
+    queries: List[str],
 ):
     db_bucket, db_prefix = _bucket_and_key(db_path)
     chunk_dir = os.path.join(input_dir, f"{aligner}-chunks")

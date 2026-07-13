@@ -10,7 +10,7 @@ import shutil
 import pathlib
 from functools import wraps
 from typing import Union
-import pkg_resources
+from importlib.resources import files
 import idseq_dag.util.log as log
 from idseq_dag.util.trace_lock import TraceLock
 import idseq_dag.util.command_patterns as command_patterns
@@ -431,7 +431,9 @@ def get_resource_filename(root_relative_path, package='idseq_dag'):
         will return a string containing:
             /app/idseq_dag/scripts/fastq-fasta-line-validation.awk
     '''
-    return pkg_resources.resource_filename(package, root_relative_path)
+    # importlib.resources replaces the deprecated pkg_resources.resource_filename.
+    # files() resolves to a concrete on-disk path that can be used directly.
+    return str(files(package).joinpath(root_relative_path))
 
 
 class LongRunningCodeSection(Updater):
