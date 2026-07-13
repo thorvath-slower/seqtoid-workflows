@@ -248,6 +248,34 @@ def write_output(output_prefix, output_name_log, df, cols=None, undef_taxids=Non
     df.to_csv(output, index=False, columns=cols, compression='gzip')
 
 
+def _provisional_domain_to_superkingdom(lineages_df):
+    """PROVISIONAL STOPGAP (2026-07-09, ticket #604) -- output is NOT scientifically final yet.
+
+    NCBI's 2024 taxonomy overhaul RENAMED the rank 'superkingdom' -> 'domain' (Bacteria / Archaea /
+    Eukaryota) and added new high-level ranks (e.g. 'realm', 'acellular root', 'cellular root').
+    This script's hardcoded write column list and the downstream taxon_lineages DB schema still
+    expect a 'superkingdom' column, so a CURRENT taxdump yields a 'domain' column and NO
+    'superkingdom' -> write_output's `to_csv(columns=[...'superkingdom'...])` raises
+    KeyError: 'superkingdom' not in index, and index generation dies at the parse stage. This is a
+    second, independent break from the numpy/pandas ABI issue (see requirements.txt numpy pin, #602).
+
+    This stopgap renames 'domain' -> 'superkingdom' so the existing 8-rank schema keeps working and
+    we can prove the pipeline mechanics end to end. The guard makes it behavior-preserving on
+    pre-2024 taxdumps (it only fires when 'domain' exists and 'superkingdom' does not).
+
+    THIS IS NOT THE FINAL ANSWER. 'domain' is the same rank as the old 'superkingdom' (a pure
+    rename, so mapping is almost certainly correct), BUT the new NCBI ranks (realm etc.) are
+    silently DROPPED here because they are not in the write column list -- which may or may not be
+    acceptable for our taxonomy needs. The correct handling (confirm the rename mapping; decide
+    whether to adopt the new ranks / migrate the DB schema) is a BIOINFORMATICS decision, HELD for
+    scientist buy-in -- ticket #604. Output from a post-2024 taxdump must be treated as PROVISIONAL
+    until #604 clears. See workspace TAXON-LINEAGE-RANK-RENAME-DECISION-2026-07-09.md.
+    """
+    if 'domain' in lineages_df.columns and 'superkingdom' not in lineages_df.columns:
+        lineages_df = lineages_df.rename(columns={'domain': 'superkingdom'})
+    return lineages_df
+
+
 def generate_name_output(nodes_df, names_file, name_class):
     names_df = load_names(names_file, name_class)
     df = nodes_df.merge(names_df, on='tax_id')
@@ -276,6 +304,7 @@ def generate_lineage_outputs(df, taxid_lineages_output_prefix, name_lineages_out
         logging.info('generating lineage-by-name output...')
         name_lineages_df = process_lineage_dd(name_lineages_dd)
         name_lineages_df.columns = name_lineages_df.columns.str.replace('no rank', 'no_rank')
+        name_lineages_df = _provisional_domain_to_superkingdom(name_lineages_df)  # #604 stopgap
         write_output(name_lineages_output_prefix, "name lineages", name_lineages_df,
                      ['tax_id', 'superkingdom', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'] +
                      [col for col in name_lineages_df if col.startswith('no_rank')])
@@ -283,6 +312,7 @@ def generate_lineage_outputs(df, taxid_lineages_output_prefix, name_lineages_out
         logging.info('generating lineage-by-taxid output...')
         taxid_lineages_df = process_lineage_dd(taxid_lineages_dd)
         taxid_lineages_df.columns = taxid_lineages_df.columns.str.replace(' ', '_')
+        taxid_lineages_df = _provisional_domain_to_superkingdom(taxid_lineages_df)  # #604 stopgap
         undef_taxids = {'species': -100,
                         'genus': -200,
                         'family': -300,
