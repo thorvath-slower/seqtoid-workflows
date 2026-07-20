@@ -1,9 +1,18 @@
-name: Index Generation NCBI Compress cargo tests
+name: Index Generation image build + NCBI Compress cargo tests
 
+# Builds + publishes the index-generation image AND runs the ncbi-compress cargo tests.
+# The image must be rebuilt whenever ANYTHING under workflows/index-generation changes -- the lineage
+# scripts, requirements.txt (e.g. the numpy==1.23.5 pin), or the Dockerfile -- not only ncbi-compress.
+# The previous trigger (ncbi-compress/** only) meant a lineage-code or requirements change never
+# republished the image, so the ghcr :latest could lag the code (including the pandas/numpy ABI fix)
+# and the quarterly taxonomy refresh would run a stale image. workflow_dispatch allows a manual
+# rebuild. NOTE: the pipeline pulls the VERSIONED image from ECR (<acct>.dkr.ecr...:v<version>); that
+# ECR publish + deploy happens via the release action (Release a WDL workflow -> index-generation).
 on:
   push:
     paths:
-      - 'workflows/index-generation/ncbi-compress/**'
+      - 'workflows/index-generation/**'
+  workflow_dispatch:
 
 env:
   LC_ALL: C.UTF-8
