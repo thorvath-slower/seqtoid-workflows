@@ -42,12 +42,34 @@ def main():
     parser.add_argument(
         "--taxadb", metavar="FILENAME", type=str, help="taxadb SQLite file, if available"
     )
+    parser.add_argument(
+        "--min-aupr",
+        metavar="FLOAT",
+        type=float,
+        default=None,
+        help="AUPR acceptance gate: exit non-zero if any sample's NT_aupr/NR_aupr is below this "
+        "floor (e.g. 0.98). Omit for report-only. Used to BLOCK a taxonomy/index refresh whose "
+        "candidate index regresses classification accuracy vs the truth set.",
+    )
 
     args = parser.parse_args(sys.argv[1:])
     harvest(**vars(args))
 
 
-def harvest(outputs, taxadb):
+def aupr_regressions(results, min_aupr):
+    """Pure gate check: return [(sample, metric, value), ...] for every *_aupr metric below the
+    floor. Ignores non-metric keys (e.g. the raw 'outputs' blob) and non-numeric values."""
+    regressions = []
+    for sample, metrics in results.items():
+        if not isinstance(metrics, dict):
+            continue
+        for key, value in metrics.items():
+            if key.endswith("_aupr") and isinstance(value, (int, float)) and value < min_aupr:
+                regressions.append((sample, key, value))
+    return regressions
+
+
+def harvest(outputs, taxadb, min_aupr=None):
     queue = []
 
     # process command line args
@@ -83,6 +105,20 @@ def harvest(outputs, taxadb):
         rslt[sample]["outputs"] = outputs_json
 
     print(json.dumps(rslt, indent=2))
+
+    # AUPR acceptance gate (opt-in). Blocks a taxonomy/index refresh whose candidate index regresses
+    # classification accuracy below the floor vs the truth set. Report-only when --min-aupr is unset.
+    if min_aupr is not None:
+        regressions = aupr_regressions(rslt, min_aupr)
+        if regressions:
+            print(
+                f"\nAUPR GATE FAILED: {len(regressions)} metric(s) below {min_aupr}:",
+                file=sys.stderr,
+            )
+            for sample, metric, value in sorted(regressions):
+                print(f"  {sample} {metric} = {value:.4f} < {min_aupr}", file=sys.stderr)
+            sys.exit(1)
+        print(f"\nAUPR gate PASSED: all NT/NR AUPR >= {min_aupr}", file=sys.stderr)
 
 
 def harvest_sample(sample, outputs_json, taxadb):
