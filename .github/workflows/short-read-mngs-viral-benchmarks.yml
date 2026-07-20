@@ -71,13 +71,26 @@ jobs:
           workflows/short-read-mngs/auto_benchmark/run_local.py --dir testrun/ --docker-image-id czid-short-read-mngs \
             --settings ${{ matrix.settings }} ${{ matrix.sample }}
       - name: harvest output statistics
+        env:
+          # AUPR acceptance gate. When the SHORT_READ_MNGS_MIN_AUPR repo variable is set, harvest exits
+          # non-zero if any sample's NT/NR AUPR drops below it -- so this benchmark BLOCKS a candidate
+          # index (e.g. a taxonomy refresh) that regresses classification vs the truth set. Unset =>
+          # report-only (unchanged behavior). Calibrate the floor against a known-good run before
+          # enabling -- viral-sample baselines are not necessarily 0.98. The JSON still goes to the
+          # artifact file (stdout); the gate reports on stderr.
+          MIN_AUPR: ${{ vars.SHORT_READ_MNGS_MIN_AUPR }}
         run: |
           export PATH=$PATH:$HOME/.local/bin
           taxadb download -o taxadb --type taxa
           taxadb create -i taxadb --dbname taxadb.sqlite || true  # exits nonzero w/o accessions
+          min_aupr_arg=()
+          if [ -n "$MIN_AUPR" ]; then min_aupr_arg=(--min-aupr "$MIN_AUPR"); fi
           workflows/short-read-mngs/auto_benchmark/harvest.py ${{ matrix.sample }}=testrun/${{ matrix.sample }} \
-            --taxadb taxadb.sqlite > ${{ matrix.sample }}.${{ matrix.settings }}_viral.json
+            --taxadb taxadb.sqlite "${min_aupr_arg[@]}" > ${{ matrix.sample }}.${{ matrix.settings }}_viral.json
       - uses: actions/upload-artifact@v7
+        # Upload even when the AUPR gate fails the step above, so the harvested JSON is available to
+        # diagnose the regression.
+        if: always()
         with:
           name: ${{ matrix.sample }}.${{ matrix.settings }}_viral.json
           path: ${{ matrix.sample }}.${{ matrix.settings }}_viral.json
